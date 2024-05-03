@@ -1,10 +1,6 @@
-## NEAR Python SDK - Crypto Module
+# NEAR Python SDK - Crypto Module
 
-### Overview
-
-The `crypto` module of the NEAR Python SDK provides a comprehensive suite of tools and classes for cryptographic operations, particularly focusing on the handling and manipulation of cryptographic key pairs. This module is essential for creating and verifying digital signatures, a critical component of secure blockchain transactions.
-
-### Modules and Classes
+## Modules
 
 The `crypto` module includes several key components designed to work with NEAR's cryptographic requirements:
 

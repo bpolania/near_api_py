@@ -1,8 +1,8 @@
-## near-api-py/accounts
+# NEAR Python SDK - Crypto Module
 
 A collection of classes, functions, and types for interacting with accounts and contracts in the NEAR Python API.
 
-# Modules
+## Modules
 
 * [account.py](https://github.com/bpolania/near_api_py/blob/main/packages/accounts/src/account.py): Contains the Account class with methods to transfer NEAR, manage account keys, sign transactions, etc.
 * [account_multisig.py](https://github.com/bpolania/near_api_py/blob/main/packages/accounts/src/account_multisig.py): Defines the AccountMultisig class, which represents a multisig deployed Account requiring multiple keys to sign transactions.
