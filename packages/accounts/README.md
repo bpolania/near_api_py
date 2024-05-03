@@ -10,5 +10,5 @@ A collection of classes, functions, and types for interacting with accounts and 
 * [account_creator.py](https://github.com/bpolania/near_api_py/blob/main/packages/accounts/account_creator.py): Includes classes for creating NEAR accounts.
 * contract.py: Defines the Contract class, which represents a deployed smart contract with view and/or change methods.
 * [connection.py](https://github.com/bpolania/near_api_py/blob/main/packages/accounts/connection.py): Contains the Connection class, a record containing the information required to connect to NEAR RPC.
-* constants.py: Defines account-specific constants.
+* [constants.py](https://github.com/bpolania/near_api_py/blob/main/packages/accounts/constants.py): Defines account-specific constants.
 * types.py: Provides account-specific types.
