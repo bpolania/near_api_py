@@ -284,7 +284,7 @@ class Account(IntoConnection):
 
         return await self.sign_and_send_transaction(
             {
-                "receiver_id": self.connection.jsvm_account_id if python_contract else contract_id,
+                "receiver_id": self.connection.pyvm_account_id if python_contract else contract_id,
                 "actions": [ActionCreators.function_call(*function_call_args)],
                 "wallet_meta": wallet_meta,
                 "wallet_callback_url": wallet_callback_url,
