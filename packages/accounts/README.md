@@ -1,4 +1,4 @@
-# NEAR Python SDK - Crypto Module
+# NEAR Python SDK - Accounts Module
 
 A collection of classes, functions, and types for interacting with accounts and contracts in the NEAR Python API.
 
