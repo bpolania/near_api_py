@@ -1,8 +1,10 @@
 import asyncio
-from typing import List, Dict, Any, Optional, Union
-from near_api.crypto import PublicKey
-from near_api.providers import exponential_backoff
-from near_api.transactions import (
+import json
+from typing import List, Dict, Any, Optional, Union, Tuple
+from dataclasses import dataclass
+from crypto import PublicKey
+from providers import exponential_backoff
+from transactions import (
     ActionCreators,
     Action,
     build_delegate_action,
@@ -12,7 +14,7 @@ from near_api.transactions import (
     SignedTransaction,
     stringify_json_or_bytes,
 )
-from near_api.types import (
+from types import (
     PositionalArgsError,
     FinalExecutionOutcome,
     TypedError,
@@ -25,7 +27,7 @@ from near_api.types import (
     FunctionCallPermissionView,
     BlockReference,
 )
-from near_api.utils import (
+from utils import (
     base_decode,
     base_encode,
     Logger,
@@ -33,10 +35,57 @@ from near_api.utils import (
     DEFAULT_FUNCTION_CALL_GAS,
     print_tx_outcome_logs_and_failures,
 )
+from connection import Connection
+from utils import view_function, view_state
+from interface import ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions
 
-from near_api.connection import Connection
-from near_api.utils import view_function, view_state
-from near_api.interface import ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions
+# Default number of retries with different nonce before giving up on a transaction.
+TX_NONCE_RETRY_NUMBER = 12
+
+# Default wait until next retry in millis.
+TX_NONCE_RETRY_WAIT = 500
+
+# Exponential back off for waiting to retry.
+TX_NONCE_RETRY_WAIT_BACKOFF = 1.5
+
+@dataclass
+class AccountBalance:
+    total: str
+    stateStaked: str
+    staked: str
+    available: str
+
+@dataclass
+class AccountAuthorizedApp:
+    contractId: str
+    amount: str
+    publicKey: str
+
+@dataclass
+class SignAndSendTransactionOptions:
+    receiverId: str
+    actions: List[Action]
+    walletMeta: Optional[str] = None
+    walletCallbackUrl: Optional[str] = None
+    returnError: Optional[bool] = None
+
+@dataclass
+class StakedBalance:
+    validatorId: str
+    amount: Optional[str] = None
+    error: Optional[str] = None
+
+@dataclass
+class ActiveDelegatedStakeBalance:
+    stakedValidators: List[StakedBalance]
+    failedValidators: List[StakedBalance]
+    total: Union[int, str]
+
+@dataclass
+class SignedDelegateOptions:
+    actions: List[Action]
+    blockHeightTtl: int
+    receiverId: str
 
 class Account(IntoConnection):
     def __init__(self, connection: Connection, account_id: str):
@@ -210,7 +259,7 @@ class Account(IntoConnection):
             {"receiver_id": self.account_id, "actions": [ActionCreators.deploy_contract(data)]}
         )
 
-    def _encode_js_contract_args(self, contract_id: str, method: str, args: Any) -> bytes:
+    def _encode_python_contract_args(self, contract_id: str, method: str, args: Any) -> bytes:
         return b"".join([contract_id.encode(), b"\0", method.encode(), b"\0", args.encode()])
 
     async def function_call(self, options: ChangeFunctionCallOptions) -> FinalExecutionOutcome:
@@ -222,20 +271,20 @@ class Account(IntoConnection):
         wallet_meta = options.get("wallet_meta")
         wallet_callback_url = options.get("wallet_callback_url")
         stringify_arg = options.get("stringify", stringify_json_or_bytes)
-        js_contract = options.get("js_contract", False)
+        python_contract = options.get("python_contract", False)
 
         self._validate_args(args)
         function_call_args = None
 
-        if js_contract:
-            encoded_args = self._encode_js_contract_args(contract_id, method_name, json.dumps(args))
-            function_call_args = ["call_js_contract", encoded_args, gas, attached_deposit, None, True]
+        if python_contract:
+            encoded_args = self._encode_python_contract_args(contract_id, method_name, json.dumps(args))
+            function_call_args = ["call_python_contract", encoded_args, gas, attached_deposit, None, True]
         else:
             function_call_args = [method_name, args, gas, attached_deposit, stringify_arg, False]
 
         return await self.sign_and_send_transaction(
             {
-                "receiver_id": self.connection.jsvm_account_id if js_contract else contract_id,
+                "receiver_id": self.connection.jsvm_account_id if python_contract else contract_id,
                 "actions": [ActionCreators.function_call(*function_call_args)],
                 "wallet_meta": wallet_meta,
                 "wallet_callback_url": wallet_callback_url,

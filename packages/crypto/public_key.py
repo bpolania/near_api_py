@@ -1,6 +1,6 @@
 from typing import Union
-from near_api.types import Assignable
-from near_api.utils import base_encode, base_decode
+from types import Assignable
+from utils import base_encode, base_decode
 from ed25519 import VerifyingKey
 
 class KeyType:
