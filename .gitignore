@@ -135,3 +135,20 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# pytest cache and test directories
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# pytest coverage reports
+.coverage
+.coverage.*
+*.cover
+htmlcov/
+
+# pytest temp directories
+.tmp*
+
