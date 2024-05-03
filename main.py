@@ -1,5 +1,5 @@
 from packages.accounts import create_account
-from packages.crypto import sign_message
+from packages.crypto.src import sign_message
 from packages.providers import send_rpc_request
 
 from fastapi import FastAPI

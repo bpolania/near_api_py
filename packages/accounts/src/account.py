@@ -2,7 +2,7 @@ import asyncio
 import json
 from typing import List, Dict, Any, Optional, Union, Tuple
 from dataclasses import dataclass
-from crypto import PublicKey
+from packages.crypto.src import PublicKey
 from providers import exponential_backoff
 from transactions import (
     ActionCreators,

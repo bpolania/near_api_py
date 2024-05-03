@@ -2,7 +2,7 @@ import base64
 import json
 from typing import Any, Callable, Optional
 
-from crypto import PublicKey
+from packages.crypto.src import PublicKey
 from types import FinalExecutionOutcome, TypedError, FunctionCallPermissionView
 from providers import fetch_json
 from transactions import ActionCreators

@@ -1,6 +1,6 @@
 import json
 from typing import Any
-from crypto import PublicKey
+from packages.crypto.src import PublicKey
 from providers import fetch_json
 from .connection import Connection
 from .account import Account
