@@ -1,7 +1,7 @@
 from typing import Union
 from types import Assignable
 from utils import base_encode, base_decode
-from ed25519 import VerifyingKey
+from key_pair_ed25519 import VerifyingKey
 
 class KeyType:
     ED25519 = 0
