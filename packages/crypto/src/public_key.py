@@ -1,7 +1,8 @@
 from typing import Union
 from types import Assignable
 from utils import base_encode, base_decode
-from key_pair_ed25519 import VerifyingKey
+from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.exceptions import InvalidSignature
 
 class KeyType:
     ED25519 = 0
@@ -53,11 +54,11 @@ class PublicKey(Assignable):
 
     def verify(self, message: bytes, signature: bytes) -> bool:
         if self.key_type == KeyType.ED25519:
-            verifying_key = VerifyingKey(self.data)
             try:
-                verifying_key.verify(signature, message)
+                public_key = ed25519.Ed25519PublicKey.from_public_bytes(self.data)
+                public_key.verify(signature, message)
                 return True
-            except Exception:
+            except InvalidSignature:
                 return False
         else:
             raise ValueError(f'Unknown key type {self.key_type}')
