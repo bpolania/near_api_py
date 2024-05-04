@@ -10,28 +10,29 @@ Ensure you have the module installed (instructions would go here, typically via 
 
 biometrinc_ed25519 requires information coming from the browser's `window` and `navigator` objects, therefore can only be called from a python native webserver such as [Flask]() running and points 
 
-### Example: calling `get_public_key`
-
-To call the get_public_key function from an HTML page in a Flask application, you need to set up an appropriate route that handles HTTP requests from the client side.:
+### Example: Initializing `biometric-ed25519` 
 
 #### Flask Route (Python)
 ``` python
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # You might need to install this package
+from flask_cors import CORS
 import asyncio
 
 app = Flask(__name__)
-CORS(app)  # This line is to handle CORS if your client is on a different origin
+CORS(app)
 
-@app.route('/get_public_key', methods=['POST'])
-async def handle_get_public_key():
-    data = request.json
-    credential = data.get('credential')
-    public_key = await get_public_keys(credential)  # Assuming your function is adjusted to accept right parameters
-    return jsonify(public_key=public_key)
+@app.route('/init', methods=['POST'])
+async def initialize():
+    rp_id = request.json['rp_id']
+    try:
+        await init(rp_id)
+        return jsonify(status="Initialized successfully"), 200
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
+
 ```
 
 #### HTML and JavaScript (Client-Side)
@@ -39,37 +40,124 @@ if __name__ == '__main__':
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Get Public Key</title>
-<script>
-async function getPublicKey(credential) {
-    const response = await fetch('/get_public_key', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({credential: credential})
-    });
-    const data = await response.json();
-    console.log(data.public_key);
-}
-</script>
+    <meta charset="UTF-8">
+    <title>Biometric Ed25519 Initialization</title>
 </head>
 <body>
-    <button onclick="getPublicKey(credentialData)">Get Public Key</button>
+    <button id="initBtn">Initialize</button>
+    <script>
+        document.getElementById('initBtn').addEventListener('click', async () => {
+            const rp_id = window.location.hostname;  // Get the hostname of the current location
+            try {
+                const response = await fetch('/init', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({rp_id: rp_id})
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    console.log('Initialization success:', data);
+                } else {
+                    console.error('Initialization failed:', data.error);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        });
+    </script>
 </body>
 </html>
+```
+
+### Example: Calling `create_key` 
+
+You need two routes on your Flask server: one to initiate the public key creation and another to handle the response after the credential is created in the browser
+
+#### Flask Route (Python)
+``` python 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Handle CORS if necessary
+
+@app.route('/get_public_key_options', methods=['POST'])
+async def get_public_key_options():
+    # Here you would typically generate or retrieve any necessary data to create the public key
+    # For simplicity, let's assume you have a function to generate these options
+    public_key_options = await generate_public_key_options()  # Define this function as needed
+    return jsonify(public_key_options)
+
+@app.route('/create_key', methods=['POST'])
+async def create_key_route():
+    navigator_credentials_create_response = request.json['navigatorCredentialsCreateResponse']
+    origin = request.headers['Origin']
+    key_pair = await create_key(navigator_credentials_create_response, origin)
+    return jsonify(key_pair=key_pair.to_dict())  # Ensure this method exists or convert appropriately
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 ```
-<!-- ```python
-from biometric_ed25519 import create_key, get_keys
 
-# To register a user with userName
-key = await create_key(userName)
+#### HTML and JavaScript (Client-Side)
 
-# To retrieve keys for a user with userName
-keys = await get_keys(userName)
-``` -->
+``` HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebAuthn Registration</title>
+</head>
+<body>
+    <button id="registerBtn">Register</button>
+    <script>
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            try {
+                const publicKeyOptionsResponse = await fetch('/get_public_key_options', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const publicKey = await publicKeyOptionsResponse.json();
+                
+                const credentials = await navigator.credentials.create({publicKey});
+                
+                const navigatorCredentialsCreateResponse = {
+                    id: credentials.id,
+                    rawId: btoa(String.fromCharCode(...new Uint8Array(credentials.rawId))),
+                    type: credentials.type,
+                    response: {
+                        clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credentials.response.clientDataJSON))),
+                        attestationObject: btoa(String.fromCharCode(...new Uint8Array(credentials.response.attestationObject)))
+                    }
+                };
+                
+                const createKeyResponse = await fetch('/create_key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({navigatorCredentialsCreateResponse})
+                });
+                const keyPair = await createKeyResponse.json();
+                console.log(keyPair);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
+``` 
+
+
+Other objects required for methods in this package are `window.location.origin` and `navigator.credentials.create`
+
+
 Due to the nature of Elliptic Curve cryptography, `get_keys` returns two possible public key pairs. To accurately identify and utilize the correct public key pair created by `create_key`, it's crucial to implement logic that preserves the public key pair from `create_key` and retrieves them with `get_keys`, selecting the correct one from the two available pairs.
 
 ## Use Case
