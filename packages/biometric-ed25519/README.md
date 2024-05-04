@@ -8,7 +8,7 @@ Ensure you have the module installed (instructions would go here, typically via 
 
 ## Usage
 
-biometrinc_ed25519 requires information coming from the browser's `window` and `navigator` objects, therefore can only be called from a python native webserver such as [Flask]() running and points 
+biometrinc_ed25519 requires information coming from the browser's `window` and `navigator` objects, therefore can only be called from a python native webserver such as [Flask](https://flask.palletsprojects.com/) running and points 
 
 ### Example: Initializing `biometric-ed25519` 
 
