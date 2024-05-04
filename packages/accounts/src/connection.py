@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 from signers import Signer, InMemorySigner
 from providers import Provider, JsonRpcProvider, FailoverRpcProvider
 from interface import IntoConnection
