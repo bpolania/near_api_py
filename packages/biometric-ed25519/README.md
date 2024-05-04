@@ -8,7 +8,7 @@ Ensure you have the module installed (instructions would go here, typically via 
 
 ## Usage
 
-```
+```python
 from biometric_ed25519 import create_key, get_keys
 
 # To register a user with userName
