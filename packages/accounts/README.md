@@ -15,8 +15,8 @@ A collection of classes, functions, and types for interacting with accounts and 
 
 ### Contributions
 
-Contributions to the `crypto` module are welcome. If you have suggestions for improvement or have identified issues, please open an issue or pull request in our GitHub repository.
+Contributions to the `accounts` module are welcome. If you have suggestions for improvement or have identified issues, please open an issue or pull request in our GitHub repository.
 
 ### License
 
-The `crypto` module and the entire NEAR Python SDK are licensed under the MIT License. For more details, see the LICENSE file in the root directory of this project.
+The `accounts` module and the entire NEAR Python SDK are licensed under the MIT License. For more details, see the LICENSE file in the root directory of this project.
