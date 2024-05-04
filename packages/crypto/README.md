@@ -6,9 +6,9 @@ The `crypto` module includes several key components designed to work with NEAR's
 
 * [public_key.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/public_key.py): A class that represents a public key capable of verifying signatures. This class is essential for validating transactions and data integrity within the NEAR ecosystem.
 
-* **KeyPairBase**: An abstract base class that defines the standard structure and functionality for a cryptographic key pair. This class provides the foundational methods that all specific key pair implementations must adhere to.
+* [key_pair_base.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/key_pair_base.py): An abstract base class that defines the standard structure and functionality for a cryptographic key pair. This class provides the foundational methods that all specific key pair implementations must adhere to.
 
-* **KeyPair**: An abstract extension of `KeyPairBase`, this class includes static methods for parsing and generating key pairs. It serves as the template from which specific key pair types are derived.
+* [key_pair.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/key_pair.py): An abstract extension of `KeyPairBase`, this class includes static methods for parsing and generating key pairs. It serves as the template from which specific key pair types are derived.
 
 * **KeyPairEd25519**: A concrete implementation of `KeyPairBase`, using the Ed25519 signing algorithm. This class is tailored for high-performance cryptographic operations and is the recommended choice for handling NEAR protocol's key management tasks.
 
