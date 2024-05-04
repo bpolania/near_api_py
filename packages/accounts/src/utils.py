@@ -21,7 +21,7 @@ def validate_args(args: Any) -> None:
     if isinstance(args, (list, tuple)) or not isinstance(args, dict):
         raise PositionalArgsError()
 
-def encode_js_contract_args(contract_id: str, method: str, args: Any) -> bytes:
+def encode_python_contract_args(contract_id: str, method: str, args: Any) -> bytes:
     return contract_id.encode() + b'\0' + method.encode() + b'\0' + args.encode()
 
 async def view_state(
@@ -55,21 +55,21 @@ async def view_function(
     args = options.get('args', {})
     parse = options.get('parse', parse_json_from_raw_response)
     stringify = options.get('stringify', bytes_json_stringify)
-    js_contract = options.get('js_contract', False)
+    python_contract = options.get('python_contract', False)
     block_query = options.get('block_query', {'finality': 'optimistic'})
 
     validate_args(args)
 
-    if js_contract:
-        encoded_args = encode_js_contract_args(contract_id, method_name, json.dumps(args) if args else '')
+    if python_contract:
+        encoded_args = encode_python_contract_args(contract_id, method_name, json.dumps(args) if args else '')
     else:
         encoded_args = stringify(args)
 
     result = await connection.provider.query(CodeResult, {
         'request_type': 'call_function',
         **block_query,
-        'account_id': connection.jsvm_account_id if js_contract else contract_id,
-        'method_name': 'view_js_contract' if js_contract else method_name,
+        'account_id': connection.pyvm_account_id if python_contract else contract_id,
+        'method_name': 'view_python_contract' if python_contract else method_name,
         'args_base64': base64.b64encode(encoded_args).decode()
     })
 
