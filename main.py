@@ -16,4 +16,3 @@ async def account_details(account_id: str):
     network_url = "https://rpc.mainnet.near.org"  # Example URL
     return await get_account_details(account_id, network_url)
 
-# Additional routes for handling specific functionality can be added here
