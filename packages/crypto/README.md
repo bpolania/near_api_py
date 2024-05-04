@@ -10,7 +10,7 @@ The `crypto` module includes several key components designed to work with NEAR's
 
 * [key_pair.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/key_pair.py): An abstract extension of `KeyPairBase`, this class includes static methods for parsing and generating key pairs. It serves as the template from which specific key pair types are derived.
 
-* **KeyPairEd25519**: A concrete implementation of `KeyPairBase`, using the Ed25519 signing algorithm. This class is tailored for high-performance cryptographic operations and is the recommended choice for handling NEAR protocol's key management tasks.
+* [key_pair_ed25519.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/key_pair_ed25519.py): A concrete implementation of `KeyPairBase`, using the Ed25519 signing algorithm. This class is tailored for high-performance cryptographic operations and is the recommended choice for handling NEAR protocol's key management tasks.
 
 - [constants.py](https://github.com/bpolania/near_api_py/blob/main/packages/crypto/src/constants.py): This module contains keypair-specific constants that are used throughout the cryptographic operations. These constants ensure that key pair operations maintain consistency and adhere to predefined standards.
 
